@@ -1,0 +1,9 @@
+# Files
+.DS_Store
+.env
+*.py[cod]
+
+# Backend Directories
+backend-api/.pytest_cache/
+
+.vscode

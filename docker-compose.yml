@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+
+  db:
+    container_name: yousician_db
+    image: mongo:latest
+    environment:
+      - MONGODB_DBNAME=yousician_db
+
+  backend:
+    container_name: yousician_backend_api
+    build: ./backend-api/
+    command: flask run --host=0.0.0.0
+    environment:
+      - FLASK_APP=src/app.py
+      - FLASK_ENV=development
+      - DATABASE_URL=mongodb://db/yousician_db
+    volumes:
+      - ./backend-api:/app
+    ports:
+      - "5000:5000"
+    links:
+      - db
