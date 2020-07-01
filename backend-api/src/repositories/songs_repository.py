@@ -3,7 +3,7 @@ from bson import ObjectId
 
 from ..db.songs_iterator import SongsIterator
 from ..db.db import songs_collection, ratings_collection
-from ..utils import get_average
+from ..utils.calculations import get_average
 
 
 def get_songs_data(page) -> list:
