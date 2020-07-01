@@ -1,4 +1,0 @@
-{
-  "backend-api/tests/songs_tests.py": true,
-  "backend-api/tests/test_songs.py": true
-}

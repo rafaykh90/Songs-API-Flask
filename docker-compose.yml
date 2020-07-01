@@ -13,7 +13,7 @@ services:
       - 27017
 
   backend:
-    container_name: yousician_backend_api
+    container_name: songs_backend_api
     build: ./backend-api/
     command: flask run --host=0.0.0.0
     environment:
