@@ -1,8 +1,9 @@
 import re
-from utils.songs_iterator import SongsIterator
-from db import get_collection
-from utils import get_average
 from bson import ObjectId
+
+from ..utils.songs_iterator import SongsIterator
+from ..db.db import songs_collection, ratings_collection
+from ..utils import get_average
 
 
 def get_songs_data(page) -> list:
@@ -11,7 +12,7 @@ def get_songs_data(page) -> list:
         title=1,
         level=1,
         artist=1,
-        # ratings=1,
+        ratings=1,
         released=1,
         difficulty=1,
     ).join_ratings()
@@ -23,10 +24,10 @@ def get_songs_data(page) -> list:
 
     data = []
     for song in aggregator.evaluate():
-        # ratings = song.pop('ratings', None)
+        ratings = song.pop('ratings', None)
         data.append({
             'id': str(song.pop('_id')),
-            # 'rating': get_average(ratings, key='value') if ratings else None,
+            'rating': get_average(ratings, key='value') if ratings else 0,
             **song,
         })
 
@@ -46,7 +47,7 @@ def search_song_by_keyword(keyword) -> list:
         title=1,
         level=1,
         artist=1,
-        # ratings=1,
+        ratings=1,
         released=1,
         difficulty=1,
     ).evaluate()
@@ -63,15 +64,55 @@ def get_avg_difficulty(level) -> list:
 
     # Fetch only id and difficulty fields for songs in level equal to 'level'
     songs = list(
-        map(lambda song: song['difficulty'], get_collection('songs').find(where, fields)))
+        map(lambda song: song['difficulty'], songs_collection.find(where, fields)))
 
     average = get_average(songs) if songs else 0
 
     return {'average': average}
 
 
-def add_song_rating(data: any) -> any:
+def add_song_rating(data: any) -> dict:
     song_id = ObjectId(data.get('song_id', ''))
 
-    if not get_collection('songs').find({'_id': {'$exists': True, '$in': [song_id]}}):
-        return
+    if not list(songs_collection.find({'_id': {'$exists': True, '$in': [song_id]}})):
+        return None
+
+    rating = int(data.get('rating'))
+
+    item_to_insert = {
+        'value': rating,
+        'song_id': song_id,
+    }
+    ratings_collection.insert(item_to_insert)
+
+    return item_to_insert
+
+
+def get_song_metrics(song_id):
+    _count = 0
+    _sum = 0
+    _max = 0
+    _min = 0
+
+    aggregator = SongsIterator().join_ratings()
+
+    song = aggregator.filter(_id=ObjectId(song_id)).select_fields(
+        _id=0, ratings=1).first().evaluate()
+
+    if not song:
+        return None
+
+    for rating in song['ratings']:
+        rating_value = rating['value'] if isinstance(rating, dict) else rating # Didn't investigate the issue of different types
+        _count += 1
+        _sum += rating_value
+        _max = _max if _max > rating_value else rating_value
+        _min = _min if _min < rating_value else rating_value
+
+    avg = round(_sum / _count, 2) if _count else 0
+
+    return {
+        'min': _min,
+        'max': _max,
+        'average': avg,
+    }

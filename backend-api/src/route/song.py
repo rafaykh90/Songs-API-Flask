@@ -1,11 +1,11 @@
 import re
 
-from bson import ObjectId
+from bson import ObjectId, errors as bsonErrors
 from flask import Blueprint, request, jsonify, abort
 
-import repositories.songs_repository as songs_repository
-# from repositories.songs_repository import get_songs_data, search_song_by_keyword
-from utils.response import Response
+# import repositories.songs_repository as songs_repository
+from ..repositories import songs_repository
+from ..utils.response import Response
 
 api = Blueprint('songs', __name__)
 
@@ -33,8 +33,8 @@ def get_songs():
         page = int(page)
     except ValueError:
         abort(400, description="Query param 'page' value invalid")
-    except TypeError: 
-        pass # page param not present
+    except TypeError:
+        pass  # page param not present
 
     data = songs_repository.get_songs_data(page)
 
@@ -70,27 +70,38 @@ def search_by_keyword():
     return Response(data).json()
 
 
-@ api.route('/api/songs/rating/', methods=['POST'])
+@ api.route('/api/songs/rating', methods=['POST'])
 def post_rating():
     data = request.json
 
     try:
-        rating = int(data.get('rating'))  # Raises value error
+        rating = int(data.get('rating'))
         if 1 > rating or rating > 5:
             raise ValueError()
+
+        response = songs_repository.add_song_rating(data)
+        if not response:
+            abort(404, description="Songs with Id {} not found".format(
+                data.get('song_id')))
+
+        return Response.created()
+
     except ValueError:
-        return Response('Invalid valid for "rating" param.').bad_request()
+        abort(400, description="'rating' param invalid")
     except TypeError:
-        return Response('Required "rating" not sent').bad_request()
-
-    ratings_collection.insert({
-        'value': rating,
-        'song_id': song_id,
-    })
-
-    return Response.no_content()
+        abort(400, description="'rating' param required")
+    except bsonErrors.InvalidId:
+        abort(400, description="'songs_id' value is invalid")
 
 
-@ api.route('/api/songs/avg/rating/<string:song_id>/', methods=['GET'])
+@api.route('/api/songs/avg/rating/<string:song_id>/', methods=['GET'])
 def average_rating(song_id):
-    pass
+    try:
+        response = songs_repository.get_song_metrics(song_id)
+
+        if not response:
+            abort(404, description="Songs with Id {} not found".format(song_id))
+
+        return Response(response).json()
+    except bsonErrors.InvalidId:
+        abort(400, description="'songs_id' value is invalid")

@@ -3,8 +3,7 @@ import os
 import re
 from typing import Optional
 
-import config
-
+from .. import config
 from pymongo import MongoClient, TEXT
 from pymongo.collection import Collection
 

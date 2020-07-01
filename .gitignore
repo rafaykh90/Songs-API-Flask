@@ -7,3 +7,5 @@
 backend-api/.pytest_cache/
 
 .vscode
+
+backend-api/server.log

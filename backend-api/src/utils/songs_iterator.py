@@ -1,11 +1,9 @@
 from pymongo.cursor import Cursor
 
-from db import get_collection
-
-songs_collection = get_collection('songs')
+from ..db.db import songs_collection
 
 class SongsIterator:
-    iter = None
+    _iter = None
     _limit = 0
     _skip = 0
     _where = {}
@@ -14,10 +12,19 @@ class SongsIterator:
     _first = False
 
     def __init__(self, cursor: Cursor = None):
-        self.iter = cursor
+        self._iter = cursor
+        self.reset()
+
+    def reset(self):
+        self._limit = 0
+        self._skip = 0
+        self._where = {}
+        self._lookup = {}
+        self._columns = {}
+        self._first = False
 
     def __aggregate(self):
-        cursor = self.iter or songs_collection
+        cursor = self._iter or songs_collection
         items = []
 
         if self._skip:
