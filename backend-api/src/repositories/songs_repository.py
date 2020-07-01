@@ -7,7 +7,7 @@ from ..utils import get_average
 
 
 def get_songs_data(page) -> list:
-    aggregator = SongsIterator().select_fields(
+    aggregator = SongsIterator(songs_collection).select_fields(
         _id=1,
         title=1,
         level=1,
@@ -43,7 +43,7 @@ def search_song_by_keyword(keyword) -> list:
         ]
     }
 
-    data = SongsIterator().filter(**where).select_fields(
+    data = SongsIterator(songs_collection).filter(**where).select_fields(
         title=1,
         level=1,
         artist=1,
@@ -94,7 +94,7 @@ def get_song_metrics(song_id):
     _max = 0
     _min = 0
 
-    aggregator = SongsIterator().join_ratings()
+    aggregator = SongsIterator(songs_collection).join_ratings()
 
     song = aggregator.filter(_id=ObjectId(song_id)).select_fields(
         _id=0, ratings=1).first().evaluate()
@@ -103,7 +103,8 @@ def get_song_metrics(song_id):
         return None
 
     for rating in song['ratings']:
-        rating_value = rating['value'] if isinstance(rating, dict) else rating # Didn't investigate the issue of different types
+        # Didn't investigate the issue of different types
+        rating_value = rating['value'] if isinstance(rating, dict) else rating
         _count += 1
         _sum += rating_value
         _max = _max if _max > rating_value else rating_value

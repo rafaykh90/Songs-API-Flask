@@ -1,6 +1,5 @@
 from pymongo.cursor import Cursor
 
-from ..db.db import songs_collection
 
 class SongsIterator:
     _iter = None
@@ -24,7 +23,7 @@ class SongsIterator:
         self._first = False
 
     def __aggregate(self):
-        cursor = self._iter or songs_collection
+        cursor = self._iter
         items = []
 
         if self._skip:
@@ -50,7 +49,7 @@ class SongsIterator:
         if self._lookup:
             return self.__aggregate()
 
-        lookup = songs_collection.find_one if self._first else songs_collection.find
+        lookup = self._iter.find_one if self._first else self._iter.find
 
         cursor = lookup(self._where, self._columns)
 

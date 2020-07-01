@@ -1,7 +1,8 @@
 import re
 
 from bson import ObjectId, errors as bsonErrors
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, json
+from werkzeug.exceptions import HTTPException
 
 from ..repositories import songs_repository
 from ..utils.response import Response
@@ -9,19 +10,16 @@ from ..utils.response import Response
 api = Blueprint('songs', __name__)
 
 
-@api.errorhandler(404)
+@api.errorhandler(HTTPException)
 def resource_not_found(e):
-    return jsonify(error=str(e)), 404
-
-
-@api.errorhandler(400)
-def bad_request(e):
-    return jsonify(error=str(e)), 400
-
-
-@api.errorhandler(500)
-def server_error(e):
-    return jsonify(error=str(e)), 500
+    response = e.get_response()
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
 
 
 @api.route('/api/songs/', methods=['GET'])
