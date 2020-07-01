@@ -1,7 +1,7 @@
 import re
 from bson import ObjectId
 
-from ..utils.songs_iterator import SongsIterator
+from ..db.songs_iterator import SongsIterator
 from ..db.db import songs_collection, ratings_collection
 from ..utils import get_average
 
