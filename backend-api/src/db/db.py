@@ -14,7 +14,7 @@ if not DATABASE_URL:
         'DATABASE_URL is required to be set in the environment')
 
 DATABASE_NAME = config.DATABASE_NAME
-DB_CONNECTION = MongoClient(DATABASE_URL)[DATABASE_NAME]
+_client = MongoClient(DATABASE_URL)[DATABASE_NAME]
 
 
 def initialize():
@@ -23,7 +23,7 @@ def initialize():
     if collection:
         return collection
 
-    collection = DB_CONNECTION['songs']
+    collection = _client['songs']
 
     json_path = os.path.join(os.path.dirname(__file__), 'songs.json')
 
@@ -39,10 +39,10 @@ def initialize():
 
 
 def get_collection(collection_name: str, create_if_not_exit: bool = False) -> Optional[Collection]:
-    collections = DB_CONNECTION.collection_names()
+    collections = _client.collection_names()
 
     if create_if_not_exit or collection_name in collections:
-        return DB_CONNECTION[collection_name]
+        return _client[collection_name]
 
 
 songs_collection = get_collection('songs', create_if_not_exit=True)
