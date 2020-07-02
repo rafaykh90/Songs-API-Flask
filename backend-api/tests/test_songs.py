@@ -79,10 +79,6 @@ class TestSongs:
         # Assert
         assert response.json == []
 
-
-# class TestAverageDifficulty:
-
-
     def test_get_avg_difficulty_ok_status(self, mocker):
         # Act
         with app.test_request_context() as context:
@@ -103,9 +99,6 @@ class TestSongs:
 
         # Assert
         assert response.json['average'] == 2
-
-
-# class TestSetRating:
 
     def test_post_rating_without_rating_bad_request(self):
         song_id = '53cb6b9b4f4ddef1ad47f943'
