@@ -6,7 +6,7 @@ from ..db.db import songs_collection, ratings_collection
 from ..utils.calculations import get_average
 
 
-def get_songs_data(page) -> list:
+def get_songs_data(page: int, limit: int) -> list:
     aggregator = SongsIterator(songs_collection).select_fields(
         _id=1,
         title=1,
@@ -19,8 +19,10 @@ def get_songs_data(page) -> list:
 
     if page:
         if page > 0:
-            items_per_page = 10
-            aggregator.skip((page - 1) * items_per_page).limit(items_per_page)
+            aggregator.skip((page - 1) * limit).limit(limit)
+    
+    if limit:
+        aggregator.limit(limit)
 
     data = []
     for song in aggregator.evaluate():

@@ -25,17 +25,22 @@ def resource_not_found(e):
 @api.route('/api/songs/', methods=['GET'])
 def get_songs():
     page = request.args.get('page')
+    limit = request.args.get('limit')
 
     try:
-        page = int(page)
+        if page:
+            page = int(page)
+
+        if limit:
+            limit = int(limit)
+
+        data = songs_repository.get_songs_data(page, limit)
+
+        return Response(data).json()
     except ValueError:
-        abort(400, description="Query param 'page' value invalid")
-    except TypeError:
-        pass  # page param not present
-
-    data = songs_repository.get_songs_data(page)
-
-    return Response(data).json()
+        abort(400, description="Invalid query params")
+    except Exception:
+        abort(500, description="Error getting songs data")
 
 
 @api.route('/api/songs/avg/difficulty', methods=['GET'])

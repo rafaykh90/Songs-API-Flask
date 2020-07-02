@@ -31,9 +31,15 @@ class TestSongs:
         # Assert
         assert response.json == [{'id': 'some_id', 'rating': 0}]
 
-    def test_get_songs_wrong_page_parameter_bad_request_status(self, mocker):
+    def test_get_songs_wrong_parameter_bad_request_status(self, mocker):
         with app.test_request_context() as context:
-            context.request.args = {'page': '1page'}
+            context.request.args = {'page': 'somgstring'}
+            with pytest.raises(HTTPException) as httperror:
+                get_songs()
+            assert 400 == httperror.value.code
+
+        with app.test_request_context() as context:
+            context.request.args = {'limit': 'stringabc'}
             with pytest.raises(HTTPException) as httperror:
                 get_songs()
             assert 400 == httperror.value.code
