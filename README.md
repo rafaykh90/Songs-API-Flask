@@ -1,8 +1,8 @@
-# Yousician Backend Test
-API Backend for Yousician Backend Test.
+# Songs Backend API
+API Backend for Songs
 
 **Application Environment**
-- Backend Framwork: Flask(Python)
+- Backend Framwork: Flask
 - Database: MongoDb
 
 **How to run locally**
