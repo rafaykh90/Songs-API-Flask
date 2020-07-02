@@ -36,7 +36,12 @@ Either way, access the backend on `http://localhost:5000`
 /api/songs/avg/rating/<song_id>          | Gets average rating of a song by Id                        | GET   |
 
 **Known Issues**
-- Naming and structure could be better
+- Naming(file and modules) and structure could be better
 - `get_song_metrics` method in `songs_repository` has different types for `rating` based on tests and actual API call
-- More tests could be included
+- Not all test cases are covered. Just enough to show how testing works.
 - Validation schemas not used for request data for simplicity
+
+**Extensibility and Future work**
+- Models could have be used for Songs and Ratings
+- If the records grows to millions, sharding can be applied to the songs collection which improve reduce query performace
+- More tests can be included
