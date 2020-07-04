@@ -29,7 +29,7 @@ class TestSongs:
             response = get_songs()
 
         # Assert
-        assert response.json == [{'id': 'some_id', 'rating': 0}]
+        assert response.json == [{'id': 'some_id', 'rating': None}]
 
     def test_get_songs_wrong_parameter_bad_request_status(self, mocker):
         with app.test_request_context() as context:
@@ -146,6 +146,9 @@ class TestSongs:
 
     def test_get_average_rating_ok_status(self, mocker):
         song_id = '53cb6b9b4f4ddef1ad47f943'
+        mocker.patch.object(songs_collection, 'find', return_value=[
+                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
+
         mocker.patch.object(songs_collection, 'aggregate', return_value=[
                             {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
 
@@ -180,8 +183,10 @@ class TestSongs:
 
     def test_get_average_ok_with_response(self, mocker):
         song_id = '53cb6b9b4f4ddef1ad47f943'
-        mocker.patch.object(songs_collection, 'aggregate', return_value=[
-                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': [3, 5, 2, 2]}])
+        data = [{'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': [3, 5, 2, 2]}]
+        mocker.patch.object(songs_collection, 'find', return_value=data)
+
+        mocker.patch.object(songs_collection, 'aggregate', return_value=data)
 
         # Act
         with app.test_request_context(song_id):

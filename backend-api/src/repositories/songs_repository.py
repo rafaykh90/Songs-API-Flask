@@ -31,9 +31,11 @@ def get_songs_data(page: int, limit: int = _defaultLimit) -> list:
     data = []
     for song in aggregator.evaluate():
         ratings = song.pop('ratings', None)
+        ratingValues = list(
+            map(lambda song: song['value'], ratings)) if ratings else None
         data.append({
             'id': str(song.pop('_id')),
-            'rating': get_average(ratings, key='value') if ratings else 0,
+            'rating': get_average(ratingValues),
             **song,
         })
 
@@ -100,9 +102,13 @@ def get_song_metrics(song_id):
     _max = 0
     _min = 0
 
-    aggregator = SongsIterator(songs_collection).join_ratings()
+    song_object_id = ObjectId(song_id)
 
-    song = aggregator.filter(_id=ObjectId(song_id)).select_fields(
+    if not list(songs_collection.find({'_id': {'$exists': True, '$in': [song_object_id]}})):
+        return None
+
+    aggregator = SongsIterator(songs_collection).join_ratings()
+    song = aggregator.filter(_id=song_object_id).select_fields(
         _id=0, ratings=1).first().evaluate()
 
     if not song:

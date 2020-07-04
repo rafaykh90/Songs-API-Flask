@@ -44,7 +44,8 @@ def get_songs():
         abort(500, description="Error getting songs data")
 
 # get_average_difficulty
-#   Retruns the average difficulty for songs along with an optional parameter 'level' to select songs from particular level
+#   Retruns the average difficulty for songs along
+#   with an optional parameter 'level' to select songs from particular level
 @api.route('/api/songs/avg/difficulty', methods=['GET'])
 def get_average_difficulty():
     level = request.args.get('level')
