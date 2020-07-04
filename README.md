@@ -1,25 +1,13 @@
-# Songs Backend API
-API Backend for Songs
+Songs API
+===========================================================
 
-**Application Environment**
-- Backend Framwork: Flask
-- Database: MongoDb
+A simple REST API developed using Flask, which provides endpoints to get and search songs, post ratings, and get average ratings and difficulties for songs stored in MongoDb database
 
 **How to run locally**
-- Install [Docker](https://www.docker.com/products/docker-desktop) on your local machine.
+- Install [Docker](https://www.docker.com/products/docker-desktop) on your local machine (if not installed).
 - Go to the root directory of application and run `docker-compose up`
 
-##### Run without Docker (Not tested) - Alternate approach:
- - Set environment variable `DATABASE_URL` with the host url for MongoDb (managed)  
- - Set environment variable `FLASK_APP` as `src/app.py` with the host url for MongoDb (managed)  
- - Set environment variable `FLASK_ENV` as `development`with the host url for MongoDb (managed)  
- - Run `cd backend-api`
- - Run `pip install -r requirements.txt`
- - Run `flask run --host=0.0.0.0`
-
- or Run `FLASK_APP=src/app.py FLASK_ENV=development DATABASE_URL=<replace with your db url including db name> flask run --host=0.0.0.0`
-
-Either way, access the backend on `http://localhost:5000`
+Flask API is accessible on `http://localhost:5000`
 
 **How to run test**
 - Go to the root directory of application and run `docker-compose run --rm backend pytest`
@@ -35,13 +23,43 @@ Either way, access the backend on `http://localhost:5000`
 /api/songs/rating| Post a rating for a song                 | POST    |
 /api/songs/avg/rating/<song_id>          | Gets average rating of a song by Id                        | GET   |
 
+
+Relevant Background Information and Pre-Requisites
+--------------------------------------------------
+
+  The developer should be familiar with Python programming, basic understanding of RESTful APIs and Flask. The application uses MongoDb as the main database, therefore understanding of NoSQL databases is important. pytest is used for testing.
+
+  The API itself is a standalone application but uses local MongoDb, therefore, in this task the application is run in docker container, where there is one container for Db and the other for the application
+
+  Keywords: Python, Flask, Docker, MongoDb, pytest
+
+Requirements Overview
+---------------------
+
+  1. Get songs (support pagination)
+  2. Search songs where keyword exists in 'artist' or 'title' 
+  3. API to add ratings for a song
+  4. Get average difficulty of all songs or songs in a particular difficulty level
+  5. Get average rating of a song
+  6. All responses should be in JSON
+  7. Tests to validate the functionality
+
+Technical Constraints
+---------------------
+
+| Constraint | Description                                                                                                                          |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| Flask     | We have to implement a backend REST API which requires Flask as the framework.                                                                              |
+| MongoDb  | We need a NoSQL database which can store songs and ratings, where schema can be modified easily                                                                               |
+| pytest     | Testing needs to be done in order to validate the logic.                                                                     |
+| Docker       | We need to be able to run the application locally, without managed MongoDb server |
+
+
 **Known Issues**
-- Naming(file and modules) and structure could be better
-- `get_song_metrics` method in `songs_repository` has different types for `rating` based on tests and actual API call
-- Not all test cases are covered. Just enough to show how testing works.
-- Validation schemas not used for request data for simplicity
+- Test coverage is not exhaustive and could be improved upon.
+- Validation schemas can be used for http requests.
 
 **Extensibility and Future work**
 - Models could have be used for Songs and Ratings
-- If the records grows to millions, sharding can be applied to the songs collection which improve reduce query performace
+- If data scales, sharding can be applied to the songs collection to improve query performace
 - More tests can be included

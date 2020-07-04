@@ -5,8 +5,10 @@ from ..db.songs_iterator import SongsIterator
 from ..db.db import songs_collection, ratings_collection
 from ..utils.calculations import get_average
 
+_defaultLimit = 10
 
-def get_songs_data(page: int, limit: int) -> list:
+
+def get_songs_data(page: int, limit: int = _defaultLimit) -> list:
     aggregator = SongsIterator(songs_collection).select_fields(
         _id=1,
         title=1,
@@ -17,12 +19,14 @@ def get_songs_data(page: int, limit: int) -> list:
         difficulty=1,
     ).join_ratings()
 
+    if not limit:
+        limit = _defaultLimit
+    else:
+        aggregator.limit(limit)  # If only limit is provided
+
     if page:
         if page > 0:
             aggregator.skip((page - 1) * limit).limit(limit)
-    
-    if limit:
-        aggregator.limit(limit)
 
     data = []
     for song in aggregator.evaluate():

@@ -11,7 +11,7 @@ DATABASE_URL = config.DATABASE_URL
 
 if not DATABASE_URL:
     raise EnvironmentError(
-        'DATABASE_URL is required to be set in the environment')
+        'DATABASE_URL should be provided')
 
 DATABASE_NAME = config.DATABASE_NAME
 _client = MongoClient(DATABASE_URL)[DATABASE_NAME]
@@ -39,7 +39,7 @@ def initialize():
 
 
 def get_collection(collection_name: str, create_if_not_exit: bool = False) -> Optional[Collection]:
-    collections = _client.collection_names()
+    collections = _client.list_collection_names()
 
     if create_if_not_exit or collection_name in collections:
         return _client[collection_name]

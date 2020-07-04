@@ -21,7 +21,8 @@ def resource_not_found(e):
     response.content_type = "application/json"
     return response
 
-
+# get_songs
+#   Returns the list of songs as JSON using pagination
 @api.route('/api/songs/', methods=['GET'])
 def get_songs():
     page = request.args.get('page')
@@ -42,7 +43,8 @@ def get_songs():
     except Exception:
         abort(500, description="Error getting songs data")
 
-
+# get_average_difficulty
+#   Retruns the average difficulty for songs along with an optional parameter 'level' to select songs from particular level
 @api.route('/api/songs/avg/difficulty', methods=['GET'])
 def get_average_difficulty():
     level = request.args.get('level')
@@ -57,6 +59,9 @@ def get_average_difficulty():
     return Response(data).json()
 
 
+# search_by_keyword
+#   Returns a list of songs based on the query param 'message' which is searched in artist or title field
+#   Returns empty list of 'message' param is empty or not present
 @api.route('/api/songs/search', methods=['GET'])
 def search_by_keyword():
     keyword = request.args.get('message')
@@ -71,7 +76,8 @@ def search_by_keyword():
 
     return Response(data).json()
 
-
+# post_rating
+#   Provides an API to add rating for a songs
 @ api.route('/api/songs/rating', methods=['POST'])
 def post_rating():
     data = request.json
@@ -96,6 +102,8 @@ def post_rating():
         abort(400, description="'songs_id' value is invalid")
 
 
+# average_rating
+#   Return a JSON object containing the average rating, max rating and min rating for a song
 @api.route('/api/songs/avg/rating/<string:song_id>/', methods=['GET'])
 def average_rating(song_id):
     try:
