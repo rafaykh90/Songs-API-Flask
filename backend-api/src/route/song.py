@@ -29,6 +29,7 @@ def get_songs():
     except Exception:
         abort(500, description="Error getting songs data")
 
+
 # get_average_difficulty
 #   Retruns the average difficulty for songs along
 #   with an optional parameter 'level' to select songs from particular level
@@ -63,6 +64,7 @@ def search_by_keyword():
         abort(500, description="Error searching songs from Db")
 
     return Response(data).json()
+
 
 # post_rating
 #   Provides an API to add rating for a songs
