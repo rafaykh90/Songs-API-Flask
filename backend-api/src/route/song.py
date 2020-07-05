@@ -1,25 +1,11 @@
-import json
-
 from bson import errors as bsonErrors
 from flask import Blueprint, request, abort
-from werkzeug.exceptions import HTTPException
 
 from ..repositories import songs_repository
 from ..utils.response import Response
 
 api = Blueprint('songs', __name__)
 
-
-@api.errorhandler(HTTPException)
-def resource_not_found(e):
-    response = e.get_response()
-    response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
-    })
-    response.content_type = "application/json"
-    return response
 
 # get_songs
 #   Returns the list of songs as JSON using pagination
