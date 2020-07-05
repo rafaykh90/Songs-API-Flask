@@ -61,5 +61,6 @@ Technical Constraints
 
 **Extensibility and Future work**
 - Models could have be used for Songs and Ratings
+- Proper logging structure 
 - If data scales, sharding can be applied to the songs collection to improve query performace
-- More tests can be included
+- If the user and songs scales to millions, this also affects the logic for calculating the average. In order to overcome this issue, we can randomly sample data from whole dataset and find out the accuracy based on Standard Deviation or Variance. 
