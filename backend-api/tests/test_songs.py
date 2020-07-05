@@ -3,9 +3,10 @@ from werkzeug.exceptions import HTTPException
 
 import pytest
 
-from . import songs_collection, ratings_collection
+from . import songs_collection
 from . import app
-from . import get_songs, search_by_keyword, get_average_difficulty, post_rating, average_rating
+from . import get_songs, search_by_keyword, get_average_difficulty
+from . import post_rating, average_rating
 
 
 class TestSongs:
@@ -147,10 +148,12 @@ class TestSongs:
     def test_get_average_rating_ok_status(self, mocker):
         song_id = '53cb6b9b4f4ddef1ad47f943'
         mocker.patch.object(songs_collection, 'find', return_value=[
-                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
+                            {'_id': '53cb6b9b4f4ddef1ad47f943',
+                             'ratings': []}])
 
         mocker.patch.object(songs_collection, 'aggregate', return_value=[
-                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
+                            {'_id': '53cb6b9b4f4ddef1ad47f943',
+                             'ratings': []}])
 
         with app.test_request_context(song_id):
             response = average_rating(song_id)
@@ -159,8 +162,9 @@ class TestSongs:
 
     def test_get_average_rating_invalid_songs_id_bad_request(self, mocker):
         song_id = '53cb6b9b4f4ddef1ad47f'
-        mocker.patch.object(songs_collection, 'aggregate', return_value=[
-                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
+        mocker.patch.object(songs_collection, 'aggregate',
+                            return_value=[{'_id': '53cb6b9b4f4ddef1ad47f943',
+                                           'ratings': []}])
 
         # Act
         with app.test_request_context(song_id):
@@ -172,7 +176,8 @@ class TestSongs:
     def test_get_average_rating_song_id_not_found(self, mocker):
         song_id = '53cb6b9b4f4ddef1ad47f946'
         mocker.patch.object(songs_collection, 'find', return_value=[
-                            {'_id': '53cb6b9b4f4ddef1ad47f943', 'ratings': []}])
+                            {'_id': '53cb6b9b4f4ddef1ad47f943',
+                             'ratings': []}])
 
         # Act
         with app.test_request_context(song_id):

@@ -1,7 +1,7 @@
-import re
+import json
 
-from bson import ObjectId, errors as bsonErrors
-from flask import Blueprint, request, jsonify, abort, json
+from bson import errors as bsonErrors
+from flask import Blueprint, request, abort
 from werkzeug.exceptions import HTTPException
 
 from ..repositories import songs_repository
@@ -61,7 +61,8 @@ def get_average_difficulty():
 
 
 # search_by_keyword
-#   Returns a list of songs based on the query param 'message' which is searched in artist or title field
+#   Returns a list of songs based on the query param 'message' which is
+#   searched in artist or title field
 #   Returns empty list of 'message' param is empty or not present
 @api.route('/api/songs/search', methods=['GET'])
 def search_by_keyword():
@@ -104,14 +105,16 @@ def post_rating():
 
 
 # average_rating
-#   Return a JSON object containing the average rating, max rating and min rating for a song
+#   Return a JSON object containing the average rating,
+#   max rating and min rating for a song
 @api.route('/api/songs/avg/rating/<string:song_id>/', methods=['GET'])
 def average_rating(song_id):
     try:
         response = songs_repository.get_song_metrics(song_id)
 
         if not response:
-            abort(404, description="Songs with Id {} not found".format(song_id))
+            abort(404,
+                  description="Songs with Id {} not found".format(song_id))
 
         return Response(response).json()
     except bsonErrors.InvalidId:

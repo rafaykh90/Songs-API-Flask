@@ -1,6 +1,5 @@
 import json
 import os
-import re
 from typing import Optional
 
 from .. import config
@@ -38,7 +37,8 @@ def initialize():
         [('title', TEXT), ('artist', TEXT)], default_language='english')
 
 
-def get_collection(collection_name: str, create_if_not_exit: bool = False) -> Optional[Collection]:
+def get_collection(collection_name: str,
+                   create_if_not_exit: bool = False) -> Optional[Collection]:
     collections = _client.list_collection_names()
 
     if create_if_not_exit or collection_name in collections:

@@ -24,9 +24,8 @@ def get_songs_data(page: int, limit: int = _defaultLimit) -> list:
     else:
         aggregator.limit(limit)  # If only limit is provided
 
-    if page:
-        if page > 0:
-            aggregator.skip((page - 1) * limit).limit(limit)
+    if page and page > 0:
+        aggregator.skip((page - 1) * limit).limit(limit)
 
     data = []
     for song in aggregator.evaluate():
@@ -72,7 +71,8 @@ def get_avg_difficulty(level) -> list:
 
     # Fetch only id and difficulty fields for songs in level equal to 'level'
     songs = list(
-        map(lambda song: song['difficulty'], songs_collection.find(where, fields)))
+        map(lambda song: song['difficulty'], songs_collection.find(where,
+                                                                   fields)))
 
     average = get_average(songs) if songs else 0
 
@@ -82,7 +82,8 @@ def get_avg_difficulty(level) -> list:
 def add_song_rating(data: any) -> dict:
     song_id = ObjectId(data.get('song_id', ''))
 
-    if not list(songs_collection.find({'_id': {'$exists': True, '$in': [song_id]}})):
+    if not list(songs_collection.find({'_id': {'$exists': True,
+                                               '$in': [song_id]}})):
         return None
 
     rating = int(data.get('rating'))
@@ -104,7 +105,8 @@ def get_song_metrics(song_id):
 
     song_object_id = ObjectId(song_id)
 
-    if not list(songs_collection.find({'_id': {'$exists': True, '$in': [song_object_id]}})):
+    if not list(songs_collection.find({'_id': {'$exists': True,
+                                               '$in': [song_object_id]}})):
         return None
 
     aggregator = SongsIterator(songs_collection).join_ratings()

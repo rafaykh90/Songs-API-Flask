@@ -1,5 +1,4 @@
-from functools import reduce
-from typing import List, Union, Dict, Any
+from typing import List, Union
 
 
 def get_average(items: List[Union[int, float]]) -> float:
