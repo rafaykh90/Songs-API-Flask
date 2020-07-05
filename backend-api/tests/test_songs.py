@@ -32,24 +32,9 @@ class TestSongs:
         # Assert
         assert response.json == [{'id': 'some_id', 'rating': None}]
 
-    def test_get_songs_wrong_parameter_bad_request_status(self, mocker):
-        with app.test_request_context() as context:
-            context.request.args = {'page': 'somgstring'}
-            with pytest.raises(HTTPException) as httperror:
-                get_songs()
-            assert 400 == httperror.value.code
-
-        with app.test_request_context() as context:
-            context.request.args = {'limit': 'stringabc'}
-            with pytest.raises(HTTPException) as httperror:
-                get_songs()
-            assert 400 == httperror.value.code
-
     def test_search_songs_ok_status(self, mocker):
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {'message': 'text'}
-
+        with app.test_request_context('?message=text'):
             response = search_by_keyword()
 
         # Assert
@@ -61,8 +46,7 @@ class TestSongs:
         mocker.patch.object(songs_collection, 'find', return_value=data)
 
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {'message': 'text'}
+        with app.test_request_context('?message=text'):
             response = search_by_keyword()
 
         # Assert
@@ -70,8 +54,7 @@ class TestSongs:
 
     def test_search_songs_no_message_empty_list(self, mocker):
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {}
+        with app.test_request_context(''):
             response = search_by_keyword()
 
         # Assert
@@ -79,8 +62,7 @@ class TestSongs:
 
     def test_search_songs_empty_message_empty_list(self, mocker):
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {'message': ''}
+        with app.test_request_context('?message='):
             response = search_by_keyword()
 
         # Assert
@@ -88,8 +70,7 @@ class TestSongs:
 
     def test_get_avg_difficulty_ok_status(self, mocker):
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {}
+        with app.test_request_context(''):
             response = get_average_difficulty()
 
         assert response.status_code == HTTPStatus.OK
@@ -100,8 +81,7 @@ class TestSongs:
         mocker.patch.object(songs_collection, 'find', return_value=data)
 
         # Act
-        with app.test_request_context() as context:
-            context.request.args = {}
+        with app.test_request_context(''):
             response = get_average_difficulty()
 
         # Assert

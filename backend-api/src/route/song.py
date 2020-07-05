@@ -11,16 +11,10 @@ api = Blueprint('songs', __name__)
 #   Returns the list of songs as JSON using pagination
 @api.route('/api/songs/', methods=['GET'])
 def get_songs():
-    page = request.args.get('page')
-    limit = request.args.get('limit')
+    page = request.args.get('page', type=int)
+    limit = request.args.get('limit', type=int)
 
     try:
-        if page:
-            page = int(page)
-
-        if limit:
-            limit = int(limit)
-
         data = songs_repository.get_songs_data(page, limit)
 
         return Response(data).json()
@@ -35,16 +29,15 @@ def get_songs():
 #   with an optional parameter 'level' to select songs from particular level
 @api.route('/api/songs/avg/difficulty', methods=['GET'])
 def get_average_difficulty():
-    level = request.args.get('level')
+    level = request.args.get('level', type=int)
     try:
-        if level:
-            level = int(level)
-    except ValueError:
-        abort(400, description="Query param 'level' value invalid")
+        data = songs_repository.get_avg_difficulty(level)
+        
+        return Response(data).json()
+    except Exception:
+        abort(500, description="Error getting average difficulty")
 
-    data = songs_repository.get_avg_difficulty(level)
 
-    return Response(data).json()
 
 
 # search_by_keyword
@@ -53,7 +46,7 @@ def get_average_difficulty():
 #   Returns empty list of 'message' param is empty or not present
 @api.route('/api/songs/search', methods=['GET'])
 def search_by_keyword():
-    keyword = request.args.get('message')
+    keyword = request.args.get('message', type=str)
 
     if not keyword:
         return Response([]).json()

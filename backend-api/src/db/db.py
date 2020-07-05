@@ -15,14 +15,17 @@ if not DATABASE_URL:
 DATABASE_NAME = config.DATABASE_NAME
 _client = MongoClient(DATABASE_URL)[DATABASE_NAME]
 
+SONGS = 'songs'
+RATINGS = 'ratings'
+
 
 def initialize():
-    collection = get_collection('songs')
+    _songs_collection = get_collection(SONGS)
 
-    if collection:
-        return collection
+    if _songs_collection:
+        return _songs_collection
 
-    collection = _client['songs']
+    _songs_collection = _client[SONGS]
 
     json_path = os.path.join(os.path.dirname(__file__), 'songs.json')
 
@@ -31,9 +34,9 @@ def initialize():
         for line in f:
             songs.append(json.loads(line))
 
-    collection.insert_many(songs)
+    _songs_collection.insert_many(songs)
 
-    collection.create_index(
+    _songs_collection.create_index(
         [('title', TEXT), ('artist', TEXT)], default_language='english')
 
 
@@ -45,5 +48,5 @@ def get_collection(collection_name: str,
         return _client[collection_name]
 
 
-songs_collection = get_collection('songs', create_if_not_exit=True)
-ratings_collection = get_collection('ratings', create_if_not_exit=True)
+songs_collection = get_collection(SONGS, create_if_not_exit=True)
+ratings_collection = get_collection(RATINGS, create_if_not_exit=True)

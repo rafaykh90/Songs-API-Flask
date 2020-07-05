@@ -70,11 +70,11 @@ def get_avg_difficulty(level) -> list:
         where['level'] = level
 
     # Fetch only id and difficulty fields for songs in level equal to 'level'
-    songs = list(
+    difficulty_values = list(
         map(lambda song: song['difficulty'], songs_collection.find(where,
                                                                    fields)))
 
-    average = get_average(songs) if songs else 0
+    average = get_average(difficulty_values) if difficulty_values else 0
 
     return {'average': average}
 
